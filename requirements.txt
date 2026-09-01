@@ -1,0 +1,8 @@
+# Streamlit playground (streamlit_app.py) — this is what Streamlit Cloud installs.
+# The live 24/7 engine needs more; see requirements-engine.txt.
+streamlit>=1.40
+pandas>=2.0
+numpy>=1.26
+matplotlib>=3.8
+pyyaml>=6.0
+python-dotenv>=1.0

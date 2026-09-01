@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>tradebot</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; font: 14px/1.5 ui-monospace, Menlo, Consolas, monospace;
+         background: #0e1116; color: #d7dde5; padding: 20px; }
+  h1 { font-size: 16px; margin: 0 0 12px; }
+  .row { display: flex; flex-wrap: wrap; gap: 16px; }
+  .card { background: #161b22; border: 1px solid #263041; border-radius: 8px;
+          padding: 12px 14px; min-width: 220px; }
+  .k { color: #8b98a9; }
+  .big { font-size: 20px; }
+  table { border-collapse: collapse; width: 100%; margin-top: 6px; }
+  th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid #263041; }
+  .buy { color: #3fb950; } .sell { color: #f85149; } .none { color: #8b98a9; }
+  button { font: inherit; padding: 8px 16px; border-radius: 6px; border: 1px solid #444;
+           background: #21262d; color: #d7dde5; cursor: pointer; }
+  button.kill { background: #6e1420; border-color: #b5202f; color: #fff; }
+  button.resume { background: #14432a; border-color: #2ea043; }
+  .halt { color: #f0a020; }
+  #err { color: #f85149; white-space: pre-wrap; margin-top: 8px; }
+  #reads td:nth-child(2) { white-space: pre-line; line-height: 1.7; }
+  #reads td:first-child { font-weight: bold; vertical-align: top; white-space: nowrap; }
+  .muted { color: #8b98a9; font-size: 12px; }
+</style>
+</head>
+<body>
+  <h1>tradebot &nbsp;<span id="mode" class="muted"></span></h1>
+  <div id="clock" class="muted" style="margin:-6px 0 14px">—</div>
+
+  <div class="row" style="margin-bottom:16px">
+    <div class="card"><div class="k">balance</div><div class="big" id="balance">—</div></div>
+    <div class="card"><div class="k">equity</div><div class="big" id="equity">—</div></div>
+    <div class="card"><div class="k">realized P&amp;L</div><div class="big" id="realized">—</div></div>
+    <div class="card"><div class="k">paper record</div><div class="big" id="record">—</div></div>
+    <div class="card"><div class="k">status</div><div class="big" id="status">—</div></div>
+    <div class="card" style="display:flex;align-items:center;gap:10px">
+      <button class="kill" onclick="act('halt')">KILL &amp; FLATTEN</button>
+      <button class="resume" onclick="act('resume')">resume</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="k">what the bot sees &nbsp;<span class="muted">(computed from candles every cycle)</span></div>
+    <table id="reads"><thead><tr><th>symbol</th><th>read</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="k">watchlist &nbsp;<span class="muted">(monitor only &mdash; alerts on every new high)</span></div>
+    <table id="wl"><thead><tr><th>ticker</th><th>price</th><th>prior high</th><th>&Delta; to high</th><th>state</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="k">news &nbsp;<span class="muted">(per-ticker headlines &mdash; posted to each ticker's Discord thread)</span></div>
+    <table id="news"><thead><tr><th>ticker</th><th>latest headline</th><th>age</th><th>new</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="k">event calendar &nbsp;<span class="muted" id="cal-window">(no new entries near high-impact releases)</span></div>
+    <div id="cal-warn" class="halt" style="margin:4px 0"></div>
+    <table id="cal"><thead><tr><th>when (ET&nbsp;/&nbsp;PT)</th><th>in</th><th>ccy</th><th>impact</th><th>event</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="row">
+    <div class="card" style="flex:1">
+      <div class="k">instruments</div>
+      <table id="inst"><thead><tr><th>symbol</th><th>bid</th><th>ask</th><th>signal</th><th>note</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card" style="flex:1">
+      <div class="k">open positions</div>
+      <table id="pos"><thead><tr><th>symbol</th><th>side</th><th>lots</th><th>entry</th><th>pnl</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="k">paper trades &nbsp;<span class="muted">(closed &mdash; SL/TP fills against real candles)</span></div>
+    <table id="trades"><thead><tr><th>closed (ET&nbsp;/&nbsp;PT)</th><th>symbol</th><th>side</th><th>lots</th><th>entry</th><th>exit</th><th>why</th><th>P&amp;L</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="k">recent events</div>
+    <table id="ev"><thead><tr><th>time (ET&nbsp;/&nbsp;PT)</th><th>kind</th><th>symbol</th><th>detail</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div id="err"></div>
+  <p class="muted">polling /api/state every 2s</p>
+
+<script src="app.js"></script>
+</body>
+</html>

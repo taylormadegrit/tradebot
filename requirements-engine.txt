@@ -1,0 +1,7 @@
+# Full live engine: FastAPI loop + OANDA data feed + Discord alerts + paper
+# broker + watchlist/news/calendar. Run this on your own machine or a VPS
+# under pm2 (see ecosystem.config.js) — NOT on Streamlit Cloud.
+-r requirements.txt
+tradelocker
+fastapi
+uvicorn[standard]

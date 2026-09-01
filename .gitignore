@@ -1,0 +1,41 @@
+# --- secrets: never commit ---
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# --- python ---
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# --- node (engine dashboard, not part of the Streamlit deploy) ---
+node_modules/
+dashboard/node_modules/
+.pm2/
+
+# --- runtime state & data (regenerated; never commit) ---
+data/*
+!data/.gitkeep
+*.db
+*.db-shm
+*.db-wal
+*.log
+HALT
+I_UNDERSTAND_LIVE_RISK
+
+# --- build artifacts / offline bundle (can contain tokens) ---
+bundle/
+dist/
+*.zip
+
+# --- os / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
